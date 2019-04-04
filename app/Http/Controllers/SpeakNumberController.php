@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 // use Illuminate\Validation\Validator;
 use Illuminate\Support\Facades\Validator;
 
+// TODO - Add some automated testing to this method.
+
 class SpeakNumberController extends Controller
 {
     private $stringToSpeak = "";
@@ -23,7 +25,7 @@ class SpeakNumberController extends Controller
 
     private $tenthDigitSpoken = [
         "zero", //Just taking up the index 0,
-        "one", //Not being used,
+        "one", //Taking up this index,
         "twenty",
         "thirty",
         "fourty",
@@ -63,12 +65,12 @@ class SpeakNumberController extends Controller
      * Return the english representaion of an int >= 9999
      * @param int $numberToSpeak What number we want to speak.
      */
-    public function index(int $numberToSpeak)
+    public function index(int $intToSpeak)
     {
         $finalSpokenString = "";
 
         // Validation
-        $validator = Validator::make(['numberToSpeak' => $numberToSpeak], [
+        $validator = Validator::make(['numberToSpeak' => $intToSpeak], [
             'numberToSpeak' => 'required|numeric|lte:9999'
         ]);
 
@@ -76,14 +78,18 @@ class SpeakNumberController extends Controller
             return response("Failed Validation");
         }
 
-        // TODO - Check for zero.
-        $intToMorph = $numberToSpeak;
+        // Check for zero
+        if($intToSpeak == 0)
+        {
+            return response()->json(['output' => "zero, wise guy."]);
+        }
+
+        $intToMorph = $intToSpeak;
         $thousands = floor($intToMorph/1000);
         if($thousands)
         {
             $finalSpokenString .= $this->singleDigitSpoken[$thousands] . " thousand ";
             $intToMorph = $intToMorph - ($thousands * 1000);
-            // echo "$thousands thousand <br />";
         }
 
         $hundreds = floor($intToMorph/100);
@@ -91,7 +97,6 @@ class SpeakNumberController extends Controller
         {
             $finalSpokenString .= $this->singleDigitSpoken[$hundreds] . " hundred ";
             $intToMorph = $intToMorph - ($hundreds * 100);
-            // echo "$hundreds hundred <br />";
         }
 
         $tens = floor($intToMorph/10);
@@ -112,7 +117,7 @@ class SpeakNumberController extends Controller
             $finalSpokenString .= $this->singleDigitSpoken[$intToMorph];
         }
 
-        echo $finalSpokenString;
+        return response()->json(["output" => $finalSpokenString]);
 
     }
 

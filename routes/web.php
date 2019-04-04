@@ -15,4 +15,4 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->get('/speak_number/{numberToSpeak}', 'SpeakNumberController@index');
+$router->get('/speak_number/{intToSpeak}', 'SpeakNumberController@index');
